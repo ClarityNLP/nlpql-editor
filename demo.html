@@ -1,0 +1,148 @@
+<html>
+<head>
+  <title> NLPQL Editor demo </title>
+</head>
+<body>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+  <script>
+    //document.getElementById("clarityCoreButton").addEventListener("click", insertClarityCore);
+
+    function insertClarityCore() {
+      nlpqlBox = document.getElementById("nlpqlBox");
+      currentText = nlpqlBox.innerHTML;
+      currentText = currentText + "include ClarityCore version \"1.0\" called Clarity;\n\n";
+      nlpqlBox.innerHTML = currentText;
+    }
+
+    function insertPhenotype() {
+      $('#phenotypeModal').modal('hide');
+      var phenotypeName = document.getElementById('phenotypeName').value;
+      var phenotypeVersion = document.getElementById('phenotypeVersion').value;
+      nlpqlBox = document.getElementById("nlpqlBox");
+      currentText = nlpqlBox.innerHTML;
+      newLine = "phenotype \"" + phenotypeName + "\" version \"" + phenotypeVersion + "\";\n\n" + currentText;
+      nlpqlBox.innerHTML = newLine;
+    }
+
+    function insertDocumentLimit() {
+      $('#limitDocumentModal').modal('hide');
+      var limitValue = document.getElementById('limitDocSize').value;
+      nlpqlBox = document.getElementById("nlpqlBox");
+      currentText = nlpqlBox.innerHTML;
+      newLine = "limit " + limitValue + "\;\n\n" + currentText;
+      nlpqlBox.innerHTML = newLine;
+    }
+
+    function insertTermset() {
+      $('#termsetModal').modal('hide');
+      var name = document.getElementById('termsetName').value;
+      var terms = document.getElementById('terms').value.split(",");
+
+      var termText = "[";
+      for (var i = 0; i < terms.length; i++) {
+        termText += "\"" + terms[i] + "\"";
+
+        if (i < terms.length-1) {
+          termText +=", "
+        }
+
+      }
+      termText += "];"
+
+      text = "termset " + name + ":\n";
+      text = text + "\t" + termText + "\n\n";
+
+      nlpqlBox = document.getElementById("nlpqlBox");
+      currentText = nlpqlBox.innerHTML;
+      nlpqlBox.innerHTML = currentText + text;
+    }
+
+
+
+  </script>
+
+  <div class = "container">
+    <div class = "row">
+      <div class = "col">
+        <div class="form-group">
+          <label for="nlpql">NLPQL:</label>
+          <textarea class="form-control" rows="10" id="nlpqlBox"></textarea>
+        </div>
+      </div>
+      <div class = "col">
+        NLPQL Helpers
+        <br><br>
+        <button type="button" class="btn btn-primary" id="phenotypeButton" data-toggle="modal" data-target="#phenotypeModal">Insert Phenotype</button>
+        <br><br>
+        <button type="button" class="btn btn-primary" id="clarityCoreButton" onclick="insertClarityCore()">Insert Clarity Library</button>
+        <br><br>
+        <button type="button" class="btn btn-primary" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal">limitDocSize</button>
+        <br><br>
+        <button type="button" class="btn btn-primary" id="termsetButton" data-toggle="modal" data-target="#termsetModal">Insert Termset</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Phenotype Modal -->
+  <div class="modal fade" id="phenotypeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <label for="phenotypeName">Phenotype Name</label>
+          <input type="text" class="form-control" id="phenotypeName">
+          <br><br>
+          <label for="phenotypeVersion">Phenotype Version</label>
+          <input type="text" class="form-control" id="phenotypeVersion">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="insertPhenotype()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- termsetModal -->
+  <div class="modal fade" id="termsetModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <label for="termsetName">Termset Name</label>
+          <input type="text" class="form-control" id="termsetName">
+          <br><br>
+          <label for="terms">Terms</label>
+          <input type="text" class="form-control" id="terms">
+          <p class="help-block">Enter comma separated terms.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="insertTermset()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Limit Doc Modal -->
+  <div class="modal fade" id="limitDocumentModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <label for="limitDocSize">Limit Document Size</label>
+          <input type="text" class="form-control" id="limitDocSize">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="insertDocumentLimit()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+</html>
