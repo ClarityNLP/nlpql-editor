@@ -22,6 +22,10 @@
         $("#limitDocumentButton").prop('disabled', false);
         $("#termsetButton").prop('disabled', false);
         $("#documentsetButton").prop('disabled', false);
+        $("#featureButton").prop('disabled', false);
+        $("#resultButton").prop('disabled', false);
+        $("#cohortButton").prop('disabled', false);
+        $("#logicalContextButton").prop('disabled', false);
       }
     }
 
@@ -205,8 +209,83 @@
       currentText = nlpqlBox.innerHTML;
       nlpqlBox.innerHTML = currentText + text;
     }
-  </script>
 
+    function insertFeature() {
+      $("#featureModal").modal('hide');
+
+      var featureName = document.getElementById("featureName").value;
+      var featureType = document.getElementById("featureType").value;
+
+      var text = "// Please fill in the key value pairs according to documentation\n";
+      text += "define " + featureName + ":\n\tClarity." + featureType + "({\n\t\t";
+      var payload = "";
+      if (featureType === "MeasurementFinder" || featureType === "NamedEntityRecognition") {
+        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tsections: [<Enter list of strings>]";
+      } else if (featureType === "ngram") {
+        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tn = <Enter integer value>,\n\t\tfilter_nums = <Enter boolean value>,\n\t\tfilter_stops = <Enter boolean value>,\n\t\tfilter_punct = <Enter boolean value>,\n\t\tlemmas = <Enter boolean value>,\n\t\tlimit_to_termset = <Enter boolean value>,\n\t\tmin_freq = <Enter integer value>";
+      } else if (featureType === "POSTagger") {
+        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>";
+      } else if (featureType === "ProviderAssertion") {
+        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tsections: [<Enter list of strings>],\n\t\tinclude_synonyms = <Enter boolean value>,\n\t\tinclude_descendants = <Enter boolean value>,\n\t\tinclude_ancestors = <Enter boolean value>,\n\t\tvocabulary = <Enter string value>";
+      } else if (featureType === "TermProximityTask") {
+        payload += "documentset: [<Enter document set here>],\n\t\tcohort: <Enter cohort here>,\n\t\ttermset1: [<Enter termset set here>],\n\t\ttermset2: [<Enter termset set here>],\n\t\tword_distance: <Enter integer value>,\n\t\tany_order: [<Enter boolean value>]";
+      } else if (featureType === "TermFinder") {
+        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tsections: [<Enter list of strings>],\n\t\tinclude_synonyms = <Enter boolean value>,\n\t\tinclude_descendants = <Enter boolean value>,\n\t\tinclude_ancestors = <Enter boolean value>,\n\t\tvocabulary = <Enter string value>";
+      } else if (featureType === "ValueExtraction") {
+        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tenum_list = <Enter list of strings>,\n\t\tminimum_value = <Enter integer value>,\n\t\tmaximum_value = <Enter integer value>,\n\t\tcase_sensitive = <Enter boolean value>";
+      }
+
+      text += payload + "\n\t});\n\n";
+      nlpqlBox = document.getElementById("nlpqlBox");
+      currentText = nlpqlBox.innerHTML;
+      nlpqlBox.innerHTML = currentText + text;
+    }
+
+    function insertResult() {
+      $("#resultModal").modal('hide');
+
+      var resultName = document.getElementById("resultName").value;
+      var resultWhereClause = document.getElementById("resultWhereClause").value;
+
+      var text = "define final " + resultName + ":\n\twhere " + resultWhereClause + ";\n\n";
+
+      nlpqlBox = document.getElementById("nlpqlBox");
+      currentText = nlpqlBox.innerHTML;
+      nlpqlBox.innerHTML = currentText + text;
+    }
+
+    function insertCohort() {
+      $("#cohortModal").modal('hide');
+
+      var cohortName = document.getElementById("cohortName").value;
+      var cohortId = document.getElementById("cohortId").value;
+
+      var text = "cohort " + cohortName + ": OHDSI.getCohort(" + cohortId + ");\n\n";
+
+      nlpqlBox = document.getElementById("nlpqlBox");
+      currentText = nlpqlBox.innerHTML;
+      nlpqlBox.innerHTML = currentText + text;
+    }
+
+    function insertLogicalContext() {
+      $("#logicalContextModal").modal('hide');
+
+      var logicalContext = document.getElementById("logicalContext").value;
+      var text = "context " + logicalContext + ";\n\n";
+
+      nlpqlBox = document.getElementById("nlpqlBox");
+      currentText = nlpqlBox.innerHTML;
+      nlpqlBox.innerHTML = currentText + text;
+    }
+
+
+
+  </script>
+  <nav class="navbar navbar-light bg-dark">
+    <a class="navbar-brand" href="#">
+      <img src="gtri.png" width="300" height="60" alt="">
+    </a>
+  </nav>
   <div class = "container">
     <div class = "row">
       <div class = "col-md-3">
@@ -218,9 +297,17 @@
         <br><br>
         <button type="button" class="btn btn-primary" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal" disabled>Limit Query</button>
         <br><br>
+        <button type="button" class="btn btn-primary" id="logicalContextButton" data-toggle="modal" data-target="#logicalContextModal" disabled>Select Logical Context</button>
+        <br><br>
+        <button type="button" class="btn btn-primary" id="cohortButton" data-toggle="modal" data-target="#cohortModal" disabled>Add OHDSI Cohort</button>
+        <br><br>
         <button type="button" class="btn btn-primary" id="termsetButton" data-toggle="modal" data-target="#termsetModal" disabled>Add Term Set</button>
         <br><br>
         <button type="button" class="btn btn-primary" id="documentsetButton" data-toggle="modal" data-target="#documentsetModal" disabled>Add Document Set</button>
+        <br><br>
+        <button type="button" class="btn btn-primary" id="featureButton" data-toggle="modal" data-target="#featureModal" disabled>Define Feature</button>
+        <br><br>
+        <button type="button" class="btn btn-primary" id="resultButton" data-toggle="modal" data-target="#resultModal" disabled>Define Result</button>
       </div>
       <div class = "col-md-9">
         <div class="form-group">
@@ -266,6 +353,92 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary" onclick="insertTermset()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- logicalContextModal -->
+  <div class="modal fade" id="logicalContextModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <label for="logicalContext">Documentset Types</label>
+          <select class="form-control" id="logicalContext">
+            <option value = "Patient">Patient</option>
+            <option value = "Document">Document</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="insertLogicalContext()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- cohortModal -->
+  <div class="modal fade" id="cohortModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <label for="cohortName">Cohort Name</label>
+          <input type="text" class="form-control" id="cohortName">
+          <br><br>
+          <label for="cohortId">OHDSI Cohort ID</label>
+          <input type="text" class="form-control" id="cohortId">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="insertCohort()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- resultModal -->
+  <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <label for="resultName">Result Name</label>
+          <input type="text" class="form-control" id="resultName">
+          <br><br>
+          <label for="resultWhereClause">Where Clause</label>
+          <input type="text" class="form-control" id="resultWhereClause">
+          <p class="help-block">Enter the where clause for the final query</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="insertResult()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- featureModal -->
+  <div class="modal fade" id="featureModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <label for="featureName">Feature Name</label>
+          <input type="text" class="form-control" id="featureName">
+          <br><br>
+          <label for="featureType">Documentset Types</label>
+          <select class="form-control" id="featureType">
+            <option value = "MeasurementFinder">Measurement Finder</option>
+            <option value = "NamedEntityRecognition">Named Entity Recognition</option>
+            <option value = "ngram">Ngram</option>
+            <option value = "POSTagger">POS Tagger</option>
+            <option value = "ProviderAssertion">Provider Assertion</option>
+            <option value = "TermProximityTask">Term Proximity Task</option>
+            <option value = "TermFinder">Term Finder</option>
+            <option value = "ValueExtraction">Value Extraction</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="insertFeature()">Save changes</button>
         </div>
       </div>
     </div>
