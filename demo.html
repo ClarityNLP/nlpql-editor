@@ -10,7 +10,6 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
   <script>
-    //document.getElementById("clarityCoreButton").addEventListener("click", insertClarityCore);
 
     function insertClarityCore() {
       nlpqlBox = document.getElementById("nlpqlBox");
@@ -20,7 +19,7 @@
     }
 
     function insertPhenotype() {
-      document.getElementById("phenotypeModal").style.display = "none";
+      $('#phenotypeModal').modal('hide');
       var phenotypeName = document.getElementById('phenotypeName').value;
       var phenotypeVersion = document.getElementById('phenotypeVersion').value;
       nlpqlBox = document.getElementById("nlpqlBox");
@@ -30,7 +29,6 @@
     }
 
     function insertDocumentLimit() {
-      //document.getElementById("limitDocumentModal").style.display = "none";
       $('#limitDocumentModal').modal('hide');
       var limitValue = document.getElementById('limitDocSize').value;
       nlpqlBox = document.getElementById("nlpqlBox");
@@ -40,7 +38,7 @@
     }
 
     function insertTermset() {
-      document.getElementById("termsetModal").style.display = "none";
+      $('#termsetModal').modal('hide');
       var name = document.getElementById('termsetName').value;
       var terms = document.getElementById('terms').value.split(",");
 
@@ -78,7 +76,7 @@
     }
 
     function insertDocumentSet() {
-      document.getElementById("documentsetModal").style.display = "none";
+      $('#documentsetModal').modal('hide');
 
       var type = document.getElementById("documentsetType").value;
       var name = document.getElementById("documentsetName").value;
