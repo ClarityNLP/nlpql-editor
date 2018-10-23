@@ -278,6 +278,18 @@
       nlpqlBox.innerHTML = currentText + text;
     }
 
+    function clearNLPQL() {
+      nlpqlBox = document.getElementById("nlpqlBox");
+      nlpqlBox.value = "";
+    }
+
+    function copy() {
+      var copyText = document.getElementById("nlpqlBox");
+      copyText.select();
+      document.execCommand("copy");
+      alert("Copied nlpql to Clipboard");
+    }
+
 
 
   </script>
@@ -289,31 +301,36 @@
   <div class = "container">
     <div class = "row">
       <div class = "col-md-3">
-        NLPQL Helpers
+        <br><br><br><br>
+        <button type="button" class="btn btn-primary btn-sm" id="phenotypeButton" data-toggle="modal" data-target="#phenotypeModal">Phenotype Name</button>
         <br><br>
-        <button type="button" class="btn btn-primary" id="phenotypeButton" data-toggle="modal" data-target="#phenotypeModal">Phenotype Name</button>
+        <button type="button" class="btn btn-primary btn-sm" id="clarityCoreButton" onclick="insertClarityCore()">Add Library</button>
         <br><br>
-        <button type="button" class="btn btn-primary" id="clarityCoreButton" onclick="insertClarityCore()">Add Library</button>
+        <button type="button" class="btn btn-primary btn-sm" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal" disabled>Limit Query</button>
         <br><br>
-        <button type="button" class="btn btn-primary" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal" disabled>Limit Query</button>
+        <button type="button" class="btn btn-primary btn-sm" id="logicalContextButton" data-toggle="modal" data-target="#logicalContextModal" disabled>Select Logical Context</button>
         <br><br>
-        <button type="button" class="btn btn-primary" id="logicalContextButton" data-toggle="modal" data-target="#logicalContextModal" disabled>Select Logical Context</button>
+        <button type="button" class="btn btn-primary btn-sm" id="cohortButton" data-toggle="modal" data-target="#cohortModal" disabled>Add OHDSI Cohort</button>
         <br><br>
-        <button type="button" class="btn btn-primary" id="cohortButton" data-toggle="modal" data-target="#cohortModal" disabled>Add OHDSI Cohort</button>
+        <button type="button" class="btn btn-primary btn-sm" id="termsetButton" data-toggle="modal" data-target="#termsetModal" disabled>Add Term Set</button>
         <br><br>
-        <button type="button" class="btn btn-primary" id="termsetButton" data-toggle="modal" data-target="#termsetModal" disabled>Add Term Set</button>
+        <button type="button" class="btn btn-primary btn-sm" id="documentsetButton" data-toggle="modal" data-target="#documentsetModal" disabled>Add Document Set</button>
         <br><br>
-        <button type="button" class="btn btn-primary" id="documentsetButton" data-toggle="modal" data-target="#documentsetModal" disabled>Add Document Set</button>
+        <button type="button" class="btn btn-primary btn-sm" id="featureButton" data-toggle="modal" data-target="#featureModal" disabled>Define Feature</button>
         <br><br>
-        <button type="button" class="btn btn-primary" id="featureButton" data-toggle="modal" data-target="#featureModal" disabled>Define Feature</button>
-        <br><br>
-        <button type="button" class="btn btn-primary" id="resultButton" data-toggle="modal" data-target="#resultModal" disabled>Define Result</button>
+        <button type="button" class="btn btn-primary btn-sm" id="resultButton" data-toggle="modal" data-target="#resultModal" disabled>Define Result</button>
       </div>
-      <div class = "col-md-9">
+      <div class = "col-md-7">
         <div class="form-group">
-          <label for="nlpql">NLPQL:</label>
-          <textarea class="form-control" rows="30" id="nlpqlBox"></textarea>
+          <label for="nlpql"> <font size = "6"> NLPQL</font></label>
+          <textarea class="form-control" rows="25" id="nlpqlBox"></textarea>
         </div>
+      </div>
+      <div class = "col-md-2">
+        <br><br><br><br>
+        <button type="button" class="btn btn-info" id="clearButton" onclick="clearNLPQL()">Clear</button>
+        <br><br>
+        <button type="button" class="btn btn-info" id = "copyButton" onclick="copy()">Copy to Clipboard</button>
       </div>
     </div>
   </div>
