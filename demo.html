@@ -11,7 +11,23 @@
 
   <script>
 
+    var mandatoryButtonClickCount = 0;
+
+
+    function toggleButtons() {
+      mandatoryButtonClickCount++;
+      if (mandatoryButtonClickCount == 2) {
+        $("#clarityCoreButton").prop('disabled', true);
+        $("#phenotypeButton").prop('disabled', true);
+        $("#limitDocumentButton").prop('disabled', false);
+        $("#termsetButton").prop('disabled', false);
+        $("#documentsetButton").prop('disabled', false);
+      }
+    }
+
     function insertClarityCore() {
+      toggleButtons();
+
       nlpqlBox = document.getElementById("nlpqlBox");
       currentText = nlpqlBox.innerHTML;
       currentText = currentText + "include ClarityCore version \"1.0\" called Clarity;\n\n";
@@ -19,6 +35,8 @@
     }
 
     function insertPhenotype() {
+      toggleButtons();
+
       $('#phenotypeModal').modal('hide');
       var phenotypeName = document.getElementById('phenotypeName').value;
       var phenotypeVersion = document.getElementById('phenotypeVersion').value;
@@ -169,24 +187,24 @@
 
   <div class = "container">
     <div class = "row">
-      <div class = "col">
-        <div class="form-group">
-          <label for="nlpql">NLPQL:</label>
-          <textarea class="form-control" rows="30" id="nlpqlBox"></textarea>
-        </div>
-      </div>
-      <div class = "col">
+      <div class = "col-md-3">
         NLPQL Helpers
         <br><br>
         <button type="button" class="btn btn-primary" id="phenotypeButton" data-toggle="modal" data-target="#phenotypeModal">Phenotype Name</button>
         <br><br>
         <button type="button" class="btn btn-primary" id="clarityCoreButton" onclick="insertClarityCore()">Add Library</button>
         <br><br>
-        <button type="button" class="btn btn-primary" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal">Limit Query</button>
+        <button type="button" class="btn btn-primary" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal" disabled>Limit Query</button>
         <br><br>
-        <button type="button" class="btn btn-primary" id="termsetButton" data-toggle="modal" data-target="#termsetModal">Add Term Set</button>
+        <button type="button" class="btn btn-primary" id="termsetButton" data-toggle="modal" data-target="#termsetModal" disabled>Add Term Set</button>
         <br><br>
-        <button type="button" class="btn btn-primary" id="documentsetButton" data-toggle="modal" data-target="#documentsetModal">Add Document Set</button>
+        <button type="button" class="btn btn-primary" id="documentsetButton" data-toggle="modal" data-target="#documentsetModal" disabled>Add Document Set</button>
+      </div>
+      <div class = "col-md-9">
+        <div class="form-group">
+          <label for="nlpql">NLPQL:</label>
+          <textarea class="form-control" rows="30" id="nlpqlBox"></textarea>
+        </div>
       </div>
     </div>
   </div>
