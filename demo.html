@@ -100,7 +100,6 @@
       var name = document.getElementById("documentsetName").value;
 
       var text = "documentset " + name + ":\n\t";
-
       if (type == 2) {
         var reportTags = document.getElementById("reportTagDocumentset").value.split(",");
         var temp = "[";
@@ -129,8 +128,9 @@
 
       } else if (type == 1) {
         var payload = "{\n\t\t";
+        var payloadKeys = [];
         var reportTypes = document.getElementById("reportTypesOption").value.split(",");
-        if (reportTypes.length > 0) {
+        if (reportTypes.length > 0 && reportTypes[0].length > 0) {
           var temp = "[";
           for (var i = 0; i < reportTypes.length; i++) {
             temp += "\"" + reportTypes[i].trim() + "\"";
@@ -140,10 +140,11 @@
           }
           temp += "]"
           payload += "report_types: " + temp + ",\n\t\t";
+          payloadKeys.push("report_types: " + temp);
         }
 
         var reportTags = document.getElementById("reportTagsOption").value.split(",");
-        if (reportTags.length > 0) {
+        if (reportTags.length > 0 && reportTags[0].length > 0) {
           var temp = "[";
           for (var i = 0; i < reportTags.length; i++) {
             temp += "\"" + reportTags[i].trim() + "\"";
@@ -153,10 +154,11 @@
           }
           temp += "]"
           payload += "report_tags: " + temp + ",\n\t\t";
+          payloadKeys.push("report_tags: " + temp);
         }
 
         var source = document.getElementById("sourceOption").value.split(",");
-        if (source.length > 0) {
+        if (source.length > 0 && source[0].length > 0) {
           var temp = "[";
           for (var i = 0; i < source.length; i++) {
             temp += "\"" + source[i].trim() + "\"";
@@ -166,17 +168,37 @@
           }
           temp += "]"
           payload += "source:" + temp + ",\n\t\t";
+          payloadKeys.push("source: " + temp);
         }
 
         var filterQuery = document.getElementById("filterQueryOption").value;
         filterQuery = filterQuery.replace(/\"/g, "\'");
         payload += "filter_query: " + "\"" + filterQuery + "\",\n\t\t";
+        if (filterQuery.length > 0) {
+          payloadKeys.push("filter_query: " + "\"" + filterQuery + "\"");
+        }
+
 
         var query = document.getElementById("queryOption").value;
         query = query.replace(/\"/g, "\'");
         payload += "query: " + "\"" + query + "\"}";
+        if (query.length > 0) {
+          payloadKeys.push("query: " + "\"" + query + "\"");
+        }
 
-        text += "Clarity.createDocumentSet(" + payload + ");\n\n";
+
+        // creating the document set item
+        var payloadBody = "{\n\t\t";
+        for (var i = 0; i < payloadKeys.length; i++) {
+          payloadBody += payloadKeys[i];
+
+          if (i < payloadKeys.length - 1) {
+            payloadBody += ",\n\t\t";
+          }
+        }
+        payloadBody += "}"
+
+        text += "Clarity.createDocumentSet(" + payloadBody + ");\n\n";
       }
 
       nlpqlBox = document.getElementById("nlpqlBox");
