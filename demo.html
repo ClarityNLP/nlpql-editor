@@ -20,7 +20,7 @@
     }
 
     function insertPhenotype() {
-      $('#phenotypeModal').modal('hide');
+      document.getElementById("phenotypeModal").style.display = "none";
       var phenotypeName = document.getElementById('phenotypeName').value;
       var phenotypeVersion = document.getElementById('phenotypeVersion').value;
       nlpqlBox = document.getElementById("nlpqlBox");
@@ -30,7 +30,7 @@
     }
 
     function insertDocumentLimit() {
-      $('#limitDocumentModal').modal('hide');
+      document.getElementById("limitDocumentModal").style.display = "none";
       var limitValue = document.getElementById('limitDocSize').value;
       nlpqlBox = document.getElementById("nlpqlBox");
       currentText = nlpqlBox.innerHTML;
@@ -39,7 +39,7 @@
     }
 
     function insertTermset() {
-      $('#termsetModal').modal('hide');
+      document.getElementById("termsetModal").style.display = "none";
       var name = document.getElementById('termsetName').value;
       var terms = document.getElementById('terms').value.split(",");
 
@@ -77,6 +77,8 @@
     }
 
     function insertDocumentSet() {
+      document.getElementById("documentsetModal").style.display = "none";
+
       var type = document.getElementById("documentsetType").value;
       var name = document.getElementById("documentsetName").value;
 
@@ -181,7 +183,7 @@
         <br><br>
         <button type="button" class="btn btn-primary" id="clarityCoreButton" onclick="insertClarityCore()">Insert Clarity Library</button>
         <br><br>
-        <button type="button" class="btn btn-primary" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal">limitDocSize</button>
+        <button type="button" class="btn btn-primary" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal">Insert document search limit</button>
         <br><br>
         <button type="button" class="btn btn-primary" id="termsetButton" data-toggle="modal" data-target="#termsetModal">Insert Termset</button>
         <br><br>
