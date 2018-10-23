@@ -7,6 +7,7 @@
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
   <script>
     //document.getElementById("clarityCoreButton").addEventListener("click", insertClarityCore);
@@ -44,12 +45,11 @@
 
       var termText = "[";
       for (var i = 0; i < terms.length; i++) {
-        termText += "\"" + terms[i] + "\"";
+        termText += "\"" + terms[i].trim() + "\"";
 
         if (i < terms.length-1) {
           termText +=", "
         }
-
       }
       termText += "];"
 
@@ -61,8 +61,109 @@
       nlpqlBox.innerHTML = currentText + text;
     }
 
+    function showDocumentSetOptions() {
+      document.getElementById("reportTagList").style.display = "none";
+      document.getElementById("reportTypeList").style.display = "none";
+      document.getElementById("documentsetList").style.display = "none";
 
+      var option = document.getElementById("documentsetType").value;
+      if (option == 2) {
+        document.getElementById("reportTagList").style.display = "block";
+      } else if (option == 3) {
+        document.getElementById("reportTypeList").style.display = "block";
+      } else if (option == 1) {
+        document.getElementById("documentsetList").style.display = "block";
+      }
+    }
 
+    function insertDocumentSet() {
+      var type = document.getElementById("documentsetType").value;
+      var name = document.getElementById("documentsetName").value;
+
+      var text = "documentset " + name + ":\n\t";
+
+      if (type == 2) {
+        var reportTags = document.getElementById("reportTagDocumentset").value.split(",");
+        var temp = "[";
+        for (var i = 0; i < reportTags.length; i++) {
+          temp += "\"" + reportTags[i].trim() + "\"";
+          if (i < reportTags.length-1) {
+            temp +=", "
+          }
+        }
+        temp += "]"
+
+        text += "Clarity.createReportTagList(" + temp + ");\n\n";
+
+      } else if (type == 3) {
+        var reportTypes = document.getElementById("reportTypeDocumentset").value.split(",");
+        var temp = "[";
+        for (var i = 0; i < reportTypes.length; i++) {
+          temp += "\"" + reportTypes[i].trim() + "\"";
+          if (i < reportTypes.length-1) {
+            temp +=", "
+          }
+        }
+        temp += "]"
+
+        text += "Clarity.createReportTypeList(" + temp + ");\n\n";
+
+      } else if (type == 1) {
+        var payload = "{\n\t\t";
+        var reportTypes = document.getElementById("reportTypesOption").value.split(",");
+        if (reportTypes.length > 0) {
+          var temp = "[";
+          for (var i = 0; i < reportTypes.length; i++) {
+            temp += "\"" + reportTypes[i].trim() + "\"";
+            if (i < reportTypes.length-1) {
+              temp +=", "
+            }
+          }
+          temp += "]"
+          payload += "report_types: " + temp + ",\n\t\t";
+        }
+
+        var reportTags = document.getElementById("reportTagsOption").value.split(",");
+        if (reportTags.length > 0) {
+          var temp = "[";
+          for (var i = 0; i < reportTags.length; i++) {
+            temp += "\"" + reportTags[i].trim() + "\"";
+            if (i < reportTags.length-1) {
+              temp +=", "
+            }
+          }
+          temp += "]"
+          payload += "report_tags: " + temp + ",\n\t\t";
+        }
+
+        var source = document.getElementById("sourceOption").value.split(",");
+        if (source.length > 0) {
+          var temp = "[";
+          for (var i = 0; i < source.length; i++) {
+            temp += "\"" + source[i].trim() + "\"";
+            if (i < source.length-1) {
+              temp +=", "
+            }
+          }
+          temp += "]"
+          payload += "source:" + temp + ",\n\t\t";
+        }
+
+        var filterQuery = document.getElementById("filterQueryOption").value;
+        filterQuery = filterQuery.replace(/\"/g, "\'");
+        payload += "filter_query: " + "\"" + filterQuery + "\",\n\t\t";
+
+        var query = document.getElementById("queryOption").value;
+        query = query.replace(/\"/g, "\'");
+        payload += "query: " + "\"" + query + "\"}";
+
+        text += "Clarity.createDocumentSet(" + payload + ");\n\n";
+      }
+
+      nlpqlBox = document.getElementById("nlpqlBox");
+      currentText = nlpqlBox.innerHTML;
+      nlpqlBox.innerHTML = currentText + text;
+    }
   </script>
 
   <div class = "container">
@@ -70,7 +171,7 @@
       <div class = "col">
         <div class="form-group">
           <label for="nlpql">NLPQL:</label>
-          <textarea class="form-control" rows="10" id="nlpqlBox"></textarea>
+          <textarea class="form-control" rows="30" id="nlpqlBox"></textarea>
         </div>
       </div>
       <div class = "col">
@@ -83,6 +184,8 @@
         <button type="button" class="btn btn-primary" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal">limitDocSize</button>
         <br><br>
         <button type="button" class="btn btn-primary" id="termsetButton" data-toggle="modal" data-target="#termsetModal">Insert Termset</button>
+        <br><br>
+        <button type="button" class="btn btn-primary" id="documentsetButton" data-toggle="modal" data-target="#documentsetModal">Insert Documentset</button>
       </div>
     </div>
   </div>
@@ -122,6 +225,60 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary" onclick="insertTermset()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- documentsetModal -->
+  <div class="modal fade" id="documentsetModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <label for="documentsetName">Documentset Name</label>
+          <input type="text" class="form-control" id="documentsetName">
+          <br><br>
+          <label for="documentsetType">Documentset Types</label>
+          <select class="form-control" id="documentsetType" onchange="showDocumentSetOptions()">
+            <option value = "0"></option>
+            <option value = "1">Create Document Set</option>
+            <option value = "2">Create Report Tag List</option>
+            <option value = "3">Create Report Type List</option>
+          </select>
+          <br><br>
+          <div id = "reportTypeList" style="display:None;">
+            <input type="text" class="form-control" id="reportTypeDocumentset">
+            <p class="help-block">Enter comma separated terms.</p>
+          </div>
+          <div id = "reportTagList" style="display:None;">
+            <input type="text" class="form-control" id="reportTagDocumentset">
+            <p class="help-block">Enter comma separated terms.</p>
+          </div>
+          <div id = "documentsetList" style="display:None;">
+            <p class="help-block">Enter one or more of the below fields</p>
+            <label for="reportTypesOption">Report Types</label>
+            <input type="text" class="form-control" id="reportTypesOption">
+            <p class="help-block">Enter comma separated terms.</p>
+            <br><br>
+            <label for="reportTagsOption">Report Tags</label>
+            <input type="text" class="form-control" id="reportTagsOption">
+            <p class="help-block">Enter comma separated terms.</p>
+            <br><br>
+            <label for="sourceOption">Source</label>
+            <input type="text" class="form-control" id="sourceOption">
+            <p class="help-block">Enter comma separated terms.</p>
+            <br><br>
+            <label for="filterQueryOption">Filter Query</label>
+            <input type="text" class="form-control" id="filterQueryOption">
+            <br><br>
+            <label for="queryOption">Query</label>
+            <input type="text" class="form-control" id="queryOption">
+            <br><br>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="insertDocumentSet()">Save changes</button>
         </div>
       </div>
     </div>
