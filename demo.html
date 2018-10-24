@@ -41,7 +41,8 @@
 
   <script>
 
-    var mandatoryButtonClickCount = 0;
+    var phenotypePresent = false;
+    var librariesPresent = false;
 
     $(document).keypress(function(e) {
       if ($("#limitDocumentModal").hasClass('in') && (e.keycode == 13 || e.which == 13)) {
@@ -54,9 +55,14 @@
     }
 
 
-    function toggleButtons() {
-      mandatoryButtonClickCount++;
-      if (mandatoryButtonClickCount == 2) {
+    function toggleButtons(button) {
+      if (button === 'phenotype') {
+        phenotypePresent = true;
+      } else if (button === 'library') {
+        librariesPresent = true;
+      }
+
+      if (phenotypePresent && librariesPresent) {
         $("#clarityCoreButton").prop('disabled', true);
         $("#phenotypeButton").prop('disabled', true);
         $("#limitDocumentButton").prop('disabled', false);
@@ -70,7 +76,7 @@
     }
 
     function insertClarityCore() {
-      toggleButtons();
+      toggleButtons('library');
 
       nlpqlBox = document.getElementById("nlpqlBox");
       currentText = nlpqlBox.value;
@@ -79,7 +85,7 @@
     }
 
     function insertPhenotype() {
-      toggleButtons();
+      toggleButtons('phenotype');
 
       $('#phenotypeModal').modal('hide');
       var phenotypeName = document.getElementById('phenotypeName').value;
