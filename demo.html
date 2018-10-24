@@ -6,6 +6,7 @@
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js"></script>
 
   <script>
     $(document).ready(function() {
@@ -21,7 +22,19 @@
           $(this).find("#submit").trigger('click');
         }
       });
+
+      var editor = ace.edit("editor");
+      editor.setTheme("ace/theme/twilight");
+      editor.getSession().setMode("ace/mode/java");
+      editor.setOptions({
+        autoScrollEditorIntoView: true,
+        copyWithEmptySelection: true,
+        minLines: 35,
+        maxLines: 35
+      });
     });
+
+
   </script>
 
   <style>
@@ -32,6 +45,12 @@
 
     .helper-buttons {
       margin-top: 10%;
+    }
+
+    #editor {
+      position: relative;
+      width:100%;
+      height:100%
     }
   </style>
 
@@ -47,6 +66,20 @@
         insertDocumentLimit();
       }
     })
+
+    function resetButtons() {
+      phenotypePresent = false;
+      librariesPresent = false;
+      $("#clarityCoreButton").prop('disabled', false);
+      $("#phenotypeButton").prop('disabled', false);
+      $("#limitDocumentButton").prop('disabled', true);
+      $("#termsetButton").prop('disabled', true);
+      $("#documentsetButton").prop('disabled', true);
+      $("#featureButton").prop('disabled', true);
+      $("#resultButton").prop('disabled', true);
+      $("#cohortButton").prop('disabled', true);
+      $("#logicalContextButton").prop('disabled', true);
+    }
 
     function clearModalContent(modalName) {
       $('#' + modalName).find("input,textarea").val('').end();
@@ -76,10 +109,9 @@
     function insertClarityCore() {
       toggleButtons('library');
 
-      nlpqlBox = document.getElementById("nlpqlBox");
-      currentText = nlpqlBox.value;
-      currentText = currentText + "include ClarityCore version \"1.0\" called Clarity;\n\n";
-      nlpqlBox.value = currentText;
+      var text =  "include ClarityCore version \"1.0\" called Clarity;\n\n";
+      var editor = ace.edit("editor");
+      editor.insert(text);
     }
 
     function insertPhenotype() {
@@ -88,20 +120,18 @@
       $('#phenotypeModal').modal('hide');
       var phenotypeName = document.getElementById('phenotypeName').value;
       var phenotypeVersion = document.getElementById('phenotypeVersion').value;
-      nlpqlBox = document.getElementById("nlpqlBox");
-      currentText = nlpqlBox.value;
-      newLine = "phenotype \"" + phenotypeName + "\" version \"" + phenotypeVersion + "\";\n\n" + currentText;
-      nlpqlBox.value = newLine;
+      var text = "phenotype \"" + phenotypeName + "\" version \"" + phenotypeVersion + "\";\n\n";
+      var editor = ace.edit("editor");
+      editor.insert(text);
       clearModalContent('phenotypeModal');
     }
 
     function insertDocumentLimit() {
       $('#limitDocumentModal').modal('hide');
       var limitValue = document.getElementById('limitDocSize').value;
-      nlpqlBox = document.getElementById("nlpqlBox");
-      currentText = nlpqlBox.value;
-      newLine = "limit " + limitValue + "\;\n\n" + currentText;
-      nlpqlBox.value = newLine;
+      var text = "limit " + limitValue + "\;\n\n";
+      var editor = ace.edit("editor");
+      editor.insert(text);
       clearModalContent('limitDocumentModal');
 
     }
@@ -124,9 +154,8 @@
       text = "termset " + name + ":\n";
       text = text + "\t" + termText + "\n\n";
 
-      nlpqlBox = document.getElementById("nlpqlBox");
-      currentText = nlpqlBox.value;
-      nlpqlBox.value = currentText + text;
+      var editor = ace.edit("editor");
+      editor.insert(text);
       clearModalContent('termsetModal');
     }
 
@@ -252,10 +281,8 @@
 
         text += "Clarity.createDocumentSet(" + payloadBody + ");\n\n";
       }
-
-      nlpqlBox = document.getElementById("nlpqlBox");
-      currentText = nlpqlBox.value;
-      nlpqlBox.value = currentText + text;
+      var editor = ace.edit("editor");
+      editor.insert(text);
       clearModalContent('documentsetModal');
     }
 
@@ -285,9 +312,8 @@
       }
 
       text += payload + "\n\t});\n\n";
-      nlpqlBox = document.getElementById("nlpqlBox");
-      currentText = nlpqlBox.value;
-      nlpqlBox.value = currentText + text;
+      var editor = ace.edit("editor");
+      editor.insert(text);
       clearModalContent('featureModal');
     }
 
@@ -299,9 +325,8 @@
 
       var text = "define final " + resultName + ":\n\twhere " + resultWhereClause + ";\n\n";
 
-      nlpqlBox = document.getElementById("nlpqlBox");
-      currentText = nlpqlBox.value;
-      nlpqlBox.value = currentText + text;
+      var editor = ace.edit("editor");
+      editor.insert(text);
       clearModalContent('resultModal');
     }
 
@@ -313,9 +338,8 @@
 
       var text = "cohort " + cohortName + ": OHDSI.getCohort(" + cohortId + ");\n\n";
 
-      nlpqlBox = document.getElementById("nlpqlBox");
-      currentText = nlpqlBox.value;
-      nlpqlBox.value = currentText + text;
+      var editor = ace.edit("editor");
+      editor.insert(text);
       clearModalContent('cohortModal');
     }
 
@@ -325,21 +349,24 @@
       var logicalContext = document.getElementById("logicalContext").value;
       var text = "context " + logicalContext + ";\n\n";
 
-      nlpqlBox = document.getElementById("nlpqlBox");
-      currentText = nlpqlBox.value;
-      nlpqlBox.value = currentText + text;
+      var editor = ace.edit("editor");
+      editor.insert(text);
       clearModalContent('logicalContextModal');
     }
 
     function clearNLPQL() {
-      nlpqlBox = document.getElementById("nlpqlBox");
-      nlpqlBox.value = "";
+      var editor = ace.edit("editor");
+      editor.setValue('');
+      resetButtons();
     }
 
     function copy() {
-      var copyText = document.getElementById("nlpqlBox");
-      copyText.select();
-      document.execCommand("copy");
+      var editor = ace.edit("editor");
+      var sel = editor.selection.toJSON();
+      editor.selectAll();
+      editor.focus();
+      document.execCommand('copy');
+      editor.selection.fromJSON(sel);
       alert("Copied nlpql to Clipboard");
     }
 
@@ -384,8 +411,11 @@
             </div>
           </div>
           <div class = "row">
-          <textarea class="form-control" rows="25" id="nlpqlBox"></textarea>
-        </div>
+            <div id="editor"></div>
+          </div>
+          <!-- <div class = "row">
+            <textarea class="form-control" rows="25" id="nlpqlBox"></textarea>
+          </div> -->
         </div>
       </div>
     </div>
