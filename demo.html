@@ -47,6 +47,11 @@
       margin-top: 10%;
     }
 
+    .custom-button {
+      width:50%;
+      margin-top: 2.5%;
+    }
+
     #editor {
       position: relative;
       width:100%;
@@ -381,23 +386,15 @@
   <div class = "container">
     <div class = "row">
       <div class = "col-md-4">
-        <button type="button" class="btn btn-primary btn-sm" id="phenotypeButton" data-toggle="modal" data-target="#phenotypeModal" style="margin-top:20%">Phenotype Name</button>
-        <br><br>
-        <button type="button" class="btn btn-primary btn-sm" id="clarityCoreButton" onclick="insertClarityCore()">Add Library</button>
-        <br><br>
-        <button type="button" class="btn btn-primary btn-sm" id="termsetButton" data-toggle="modal" data-target="#termsetModal" disabled>Add Term Set</button>
-        <br><br>
-        <button type="button" class="btn btn-primary btn-sm" id="documentsetButton" data-toggle="modal" data-target="#documentsetModal" disabled>Add Document Set</button>
-        <br><br>
-        <button type="button" class="btn btn-primary btn-sm" id="cohortButton" data-toggle="modal" data-target="#cohortModal" disabled>Add OHDSI Cohort</button>
-        <br><br>
-        <button type="button" class="btn btn-primary btn-sm" id="featureButton" data-toggle="modal" data-target="#featureModal" disabled>Define Feature</button>
-        <br><br>
-        <button type="button" class="btn btn-primary btn-sm" id="resultButton" data-toggle="modal" data-target="#resultModal" disabled>Define Result</button>
-        <br><br>
-        <button type="button" class="btn btn-primary btn-sm" id="logicalContextButton" data-toggle="modal" data-target="#logicalContextModal" disabled>Select Logical Context</button>
-        <br><br>
-        <button type="button" class="btn btn-primary btn-sm" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal" disabled>Limit Query</button>
+        <button type="button" class="btn btn-primary btn-sm custom-button" id="phenotypeButton" data-toggle="modal" data-target="#phenotypeModal" style="margin-top:25%;">Phenotype Name</button>
+        <button type="button" class="btn btn-primary btn-sm custom-button" id="clarityCoreButton" onclick="insertClarityCore()">Add Library</button>
+        <button type="button" class="btn btn-primary btn-sm custom-button" id="termsetButton" data-toggle="modal" data-target="#termsetModal" disabled>Add Term Set</button>
+        <button type="button" class="btn btn-primary btn-sm custom-button" id="documentsetButton" data-toggle="modal" data-target="#documentsetModal" disabled>Add Document Set</button>
+        <button type="button" class="btn btn-primary btn-sm custom-button" id="cohortButton" data-toggle="modal" data-target="#cohortModal" disabled>Add OHDSI Cohort</button>
+        <button type="button" class="btn btn-primary btn-sm custom-button" id="featureButton" data-toggle="modal" data-target="#featureModal" disabled>Define Feature</button>
+        <button type="button" class="btn btn-primary btn-sm custom-button" id="resultButton" data-toggle="modal" data-target="#resultModal" disabled>Define Result</button>
+        <button type="button" class="btn btn-primary btn-sm custom-button" id="logicalContextButton" data-toggle="modal" data-target="#logicalContextModal" disabled>Select Logical Context</button>
+        <button type="button" class="btn btn-primary btn-sm custom-button" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal" disabled>Limit Query</button>
       </div>
       <div class = "col-md-8">
         <div class="form-group">
