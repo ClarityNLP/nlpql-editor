@@ -1,2 +1,3 @@
 # nlpql-editor
-Demo repository for the nlpql editor
+
+A Lightweight NLPQL editor
