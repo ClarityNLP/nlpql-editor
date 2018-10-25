@@ -84,6 +84,7 @@
       $("#resultButton").prop('disabled', true);
       $("#cohortButton").prop('disabled', true);
       $("#logicalContextButton").prop('disabled', true);
+        $("#customTaskButton").prop('disabled', true);
     }
 
     function clearModalContent(modalName) {
@@ -108,6 +109,7 @@
         $("#resultButton").prop('disabled', false);
         $("#cohortButton").prop('disabled', false);
         $("#logicalContextButton").prop('disabled', false);
+        $("#customTaskButton").prop('disabled', false);
       }
     }
 
@@ -375,6 +377,88 @@
       alert("Copied nlpql to Clipboard");
     }
 
+    function showCustomTaskOptions() {
+      document.getElementById("customTermsetDiv").style.display = "none";
+      document.getElementById("customDocumentsetDiv").style.display = "none";
+      document.getElementById("customCohortDiv").style.display = "none";
+      document.getElementById("customGroupbyDiv").style.display = "none";
+
+      var option = document.getElementById("customTaskType").value;
+      if (option != "None") {
+        document.getElementById("customTermsetDiv").style.display = "block";
+        document.getElementById("customDocumentsetDiv").style.display = "block";
+        document.getElementById("customCohortDiv").style.display = "block";
+      }
+
+      if (option === "TextStats") {
+        document.getElementById("customGroupbyDiv").style.display = "block";
+      }
+    }
+
+    function insertCustomTask() {
+      $('#customTaskModal').modal('hide');
+
+      var customTask = document.getElementById("customTaskType").value;
+
+      var payload = [];
+
+      //termset
+      var terms = document.getElementById('customTermset').value.split(",");
+      if (terms.length > 0 && terms[0].length > 0) {
+        var termText = "[";
+        for (var i = 0; i < terms.length; i++) {
+          termText += "\"" + terms[i].trim() + "\"";
+
+          if (i < terms.length-1) {
+            termText +=", "
+          }
+        }
+        termText += "]"
+        payload.push("termset: " + termText);
+      }
+
+      //documentset
+      var documents = document.getElementById('customDocumentset').value.split(",");
+      if (documents.length > 0 && documents[0].length > 0) {
+        var documentText = "[";
+        for (var i = 0; i < documents.length; i++) {
+          documentText += "\"" + documents[i].trim() + "\"";
+
+          if (i < documents.length-1) {
+            documentText +=", "
+          }
+        }
+        documentText += "]"
+        payload.push("documentset: " + documentText);
+      }
+
+      // cohort
+      var cohort = document.getElementById('customCohort').value;
+      if (cohort != null && cohort.length > 0) {
+        payload.push("cohort: " + "\"" +cohort+"\"");
+      }
+
+      // groupBy
+      var groupBy = document.getElementById('customGroupby').value;
+      if (groupBy != null && groupBy.length > 0) {
+        payload.push("group_by: " + "\""+groupBy+"\"");
+      }
+
+      // Constructing custom task element
+      var text = "Clarity." + customTask + "({\n\t";
+      for (var i = 0; i < payload.length; i++) {
+        text += payload[i];
+        if (i < payload.length-1) {
+          text+=",\n\t";
+        }
+      }
+      text += "\n});\n\n";
+
+      var editor = ace.edit("editor");
+      editor.insert(text);
+      clearModalContent('customTaskModal');
+    }
+
 
 
   </script>
@@ -392,6 +476,7 @@
         <button type="button" class="btn btn-primary btn-sm custom-button" id="documentsetButton" data-toggle="modal" data-target="#documentsetModal" disabled>Add Document Set</button>
         <button type="button" class="btn btn-primary btn-sm custom-button" id="cohortButton" data-toggle="modal" data-target="#cohortModal" disabled>Add OHDSI Cohort</button>
         <button type="button" class="btn btn-primary btn-sm custom-button" id="featureButton" data-toggle="modal" data-target="#featureModal" disabled>Define Feature</button>
+        <button type="button" class="btn btn-primary btn-sm custom-button" id="customTaskButton" data-toggle="modal" data-target="#customTaskModal" disabled>Add Custom Task</button>
         <button type="button" class="btn btn-primary btn-sm custom-button" id="resultButton" data-toggle="modal" data-target="#resultModal" disabled>Define Result</button>
         <button type="button" class="btn btn-primary btn-sm custom-button" id="logicalContextButton" data-toggle="modal" data-target="#logicalContextModal" disabled>Select Logical Context</button>
         <button type="button" class="btn btn-primary btn-sm custom-button" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal" disabled>Limit Query</button>
@@ -539,6 +624,53 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="button" id="submit" class="btn btn-primary" onclick="insertFeature()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- customTaskModal -->
+  <div class="modal fade" id="customTaskModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <label for="customTaskType">Select Algorithm</label>
+          <select class="form-control" id="customTaskType" onchange="showCustomTaskOptions()">
+            <option value="None"></option>
+            <option value = "GleasonScoreTask">Gleason ScoreTask</option>
+            <option value = "RaceFinderTask">Race Finder Task</option>
+            <option value = "PFTFinder">PFT Finder</option>
+            <option value = "TextStats">Text Stats</option>
+            <option value = "TNMStager">TNM Stager</option>
+            <option value = "TransfusionNursingNotesParser">Transfusion Nursing Notes Parser</option>
+          </select>
+          <br><br>
+          <div id = "customTermsetDiv" style="display:None;">
+            <label for="customTermset">Term Set</label>
+            <input type="text" class="form-control" id="customTermset">
+            <p class="help-block">Enter comma separated terms.</p>
+          </div>
+          <br>
+          <div id = "customDocumentsetDiv" style="display:None;">
+            <label for="customDocumentset">Document Set</label>
+            <input type="text" class="form-control" id="customDocumentset">
+            <p class="help-block">Enter comma separated terms.</p>
+          </div>
+          <br>
+          <div id = "customCohortDiv" style="display:None;">
+            <label for="customCohort">Cohort</label>
+            <input type="text" class="form-control" id="customCohort">
+          </div>
+          <br>
+          <div id = "customGroupbyDiv" style="display:None;">
+            <label for="customGroupby">Group By</label>
+            <input type="text" class="form-control" id="customGroupby">
+          </div>
+          <br>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" id="submit" class="btn btn-primary" onclick="insertCustomTask()">Save changes</button>
         </div>
       </div>
     </div>
