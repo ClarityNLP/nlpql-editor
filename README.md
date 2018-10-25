@@ -1,3 +1,3 @@
 # nlpql-editor
 
-A Lightweight NLPQL editor
+A lightweight NLPQL editor
