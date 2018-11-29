@@ -445,14 +445,17 @@
       document.getElementById("customMinFreqDiv").style.display = "none";
       document.getElementById("customLemmasDiv").style.display = "none";
       document.getElementById("customLimitTermsetDiv").style.display = "none";
+      document.getElementById("customSynonymsDiv").style.display = "none";
+      document.getElementById("customDescendantsDiv").style.display = "none";
+      document.getElementById("customAncestorsDiv").style.display = "none";
+      document.getElementById("customVocabularyDiv").style.display = "none";
 
 
-      // resetting value
-      document.getElementById("featureType").value = "None";
+
     }
 
     function showFeatureOptions() {
-      //resetFeatureModalElements();
+      resetFeatureModalElements();
 
       var option = document.getElementById("featureType").value;
       if (option === "MeasurementFinder") {
@@ -476,6 +479,19 @@
         document.getElementById("customMinFreqDiv").style.display = "block";
         document.getElementById("customLemmasDiv").style.display = "block";
         document.getElementById("customLimitTermsetDiv").style.display = "block";
+      } else if (option === "POSTagger") {
+        document.getElementById("customTermsetDiv").style.display = "block";
+        document.getElementById("customDocumentsetDiv").style.display = "block";
+        document.getElementById("customCohortDiv").style.display = "block";
+      } else if (option === "ProviderAssertion") {
+        document.getElementById("customTermsetDiv").style.display = "block";
+        document.getElementById("customDocumentsetDiv").style.display = "block";
+        document.getElementById("customCohortDiv").style.display = "block";
+        document.getElementById("customSectionsDiv").style.display = "block";
+        document.getElementById("customSynonymsDiv").style.display = "block";
+        document.getElementById("customDescendantsDiv").style.display = "block";
+        document.getElementById("customAncestorsDiv").style.display = "block";
+        document.getElementById("customVocabularyDiv").style.display = "block";
       }
     }
 
@@ -578,8 +594,25 @@
         payload.push("limit_to_termset: " + limitTermset);
       }
 
+      if (featureType === "ProviderAssertion") {
+        //Synonyms
+        var synonyms = document.getElementById('customSynonyms').value;
+        payload.push("include_synonyms: " + synonyms);
 
+        // descendants
+        var descendants = document.getElementById('customDescendants').value;
+        payload.push("include_descendants: " + descendants);
 
+        // include_ancestors
+        var ancestors = document.getElementById('customAncestors').value;
+        payload.push("include_ancestors: " + ancestors);
+
+        // vocabulary
+        var vocabulary = document.getElementById('customVocabulary').value.trim();
+        if (vocabulary != null && vocabulary.length > 0) {
+          payload.push("vocabulary: " + "\"" + vocabulary + "\"");
+        }
+      }
 
 
       // Constructing custom task element
@@ -597,6 +630,7 @@
       editor.insert(text);
       clearModalContent('featureModal');
       resetFeatureModalElements();
+      document.getElementById("customLimitTermsetDiv").style.display = "none";
     }
 
     function insertFeature() {
@@ -858,7 +892,31 @@
               <option value="true">True</option>
             </select>
           </div>
-
+          <div id = "customSynonymsDiv" class="hidden-field" style="display:None;">
+            <label for="customSynonyms">Include Synonyms</label>
+            <select class="form-control" id="customSynonyms">
+              <option value="true">True</option>
+              <option value = "false">False</option>
+            </select>
+          </div>
+          <div id = "customDescendantsDiv" class="hidden-field" style="display:None;">
+            <label for="customDescendants">Include Descendants</label>
+            <select class="form-control" id="customDescendants">
+              <option value="true">True</option>
+              <option value = "false">False</option>
+            </select>
+          </div>
+          <div id = "customAncestorsDiv" class="hidden-field" style="display:None;">
+            <label for="customAncestors">Include Ancestors</label>
+            <select class="form-control" id="customAncestors">
+              <option value="true">True</option>
+              <option value = "false">False</option>
+            </select>
+          </div>
+          <div id = "customVocabularyDiv" class="hidden-field" style="display:None;">
+            <label for="customVocabulary">Vocabulary</label>
+            <input type="text" class="form-control" id="customVocabulary">
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
