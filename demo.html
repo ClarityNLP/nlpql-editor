@@ -52,6 +52,10 @@
       margin-top: 2.5%;
     }
 
+    .hidden-field {
+      margin-top: 3%;
+    }
+
     #editor {
       position: relative;
       width:100%;
@@ -293,37 +297,6 @@
       clearModalContent('documentsetModal');
     }
 
-    function insertFeature() {
-      $("#featureModal").modal('hide');
-
-      var featureName = document.getElementById("featureName").value;
-      var featureType = document.getElementById("featureType").value;
-
-      var text = "// Please fill in the key value pairs according to documentation\n";
-      text += "define " + featureName + ":\n\tClarity." + featureType + "({\n\t\t";
-      var payload = "";
-      if (featureType === "MeasurementFinder" || featureType === "NamedEntityRecognition") {
-        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tsections: [<Enter list of strings>]";
-      } else if (featureType === "ngram") {
-        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tn = <Enter integer value>,\n\t\tfilter_nums = <Enter boolean value>,\n\t\tfilter_stops = <Enter boolean value>,\n\t\tfilter_punct = <Enter boolean value>,\n\t\tlemmas = <Enter boolean value>,\n\t\tlimit_to_termset = <Enter boolean value>,\n\t\tmin_freq = <Enter integer value>";
-      } else if (featureType === "POSTagger") {
-        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>";
-      } else if (featureType === "ProviderAssertion") {
-        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tsections: [<Enter list of strings>],\n\t\tinclude_synonyms = <Enter boolean value>,\n\t\tinclude_descendants = <Enter boolean value>,\n\t\tinclude_ancestors = <Enter boolean value>,\n\t\tvocabulary = <Enter string value>";
-      } else if (featureType === "TermProximityTask") {
-        payload += "documentset: [<Enter document set here>],\n\t\tcohort: <Enter cohort here>,\n\t\ttermset1: [<Enter termset set here>],\n\t\ttermset2: [<Enter termset set here>],\n\t\tword_distance: <Enter integer value>,\n\t\tany_order: [<Enter boolean value>]";
-      } else if (featureType === "TermFinder") {
-        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tsections: [<Enter list of strings>],\n\t\tinclude_synonyms = <Enter boolean value>,\n\t\tinclude_descendants = <Enter boolean value>,\n\t\tinclude_ancestors = <Enter boolean value>,\n\t\tvocabulary = <Enter string value>";
-      } else if (featureType === "ValueExtraction") {
-        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tenum_list = <Enter list of strings>,\n\t\tminimum_value = <Enter integer value>,\n\t\tmaximum_value = <Enter integer value>,\n\t\tcase_sensitive = <Enter boolean value>";
-      }
-
-      text += payload + "\n\t});\n\n";
-      var editor = ace.edit("editor");
-      editor.insert(text);
-      clearModalContent('featureModal');
-    }
-
     function insertResult() {
       $("#resultModal").modal('hide');
 
@@ -457,6 +430,133 @@
       var editor = ace.edit("editor");
       editor.insert(text);
       clearModalContent('customTaskModal');
+    }
+
+    function showFeatureOptions() {
+      document.getElementById("customTermsetDiv").style.display = "none";
+      document.getElementById("customDocumentsetDiv").style.display = "none";
+      document.getElementById("customCohortDiv").style.display = "none";
+      document.getElementById("customGroupbyDiv").style.display = "none";
+
+      var option = document.getElementById("featureType").value;
+      if (option === "MeasurementFinder") {
+        document.getElementById("customTermsetDiv").style.display = "block";
+        document.getElementById("customDocumentsetDiv").style.display = "block";
+        document.getElementById("customCohortDiv").style.display = "block";
+        document.getElementById("customSectionsDiv").style.display = "block";
+      }
+    }
+
+    function insertFeature2() {
+      $("#featureModal").modal('hide');
+
+      var featureName = document.getElementById("featureName").value;
+      var featureType = document.getElementById("featureType").value;
+
+      var payload = [];
+
+      //termset
+      var terms = document.getElementById('customTermset').value.split(",");
+      if (terms.length > 0 && terms[0].length > 0) {
+        var termText = "[";
+        for (var i = 0; i < terms.length; i++) {
+          termText += "\"" + terms[i].trim() + "\"";
+
+          if (i < terms.length-1) {
+            termText +=", "
+          }
+        }
+        termText += "]"
+        payload.push("termset: " + termText);
+      }
+
+      //documentset
+      var documents = document.getElementById('customDocumentset').value.split(",");
+      if (documents.length > 0 && documents[0].length > 0) {
+        var documentText = "[";
+        for (var i = 0; i < documents.length; i++) {
+          documentText += "\"" + documents[i].trim() + "\"";
+
+          if (i < documents.length-1) {
+            documentText +=", "
+          }
+        }
+        documentText += "]"
+        payload.push("documentset: " + documentText);
+      }
+
+      // cohort
+      var cohort = document.getElementById('customCohort').value;
+      if (cohort != null && cohort.length > 0) {
+        payload.push("cohort: " + "\"" +cohort+"\"");
+      }
+
+      // groupBy
+      var groupBy = document.getElementById('customGroupby').value;
+      if (groupBy != null && groupBy.length > 0) {
+        payload.push("group_by: " + "\""+groupBy+"\"");
+      }
+
+      //sections
+      var sections = document.getElementById('customSections').value.split(",");
+      if (sections.length > 0 && sections[0].length > 0) {
+        var sectionText = "[";
+        for (var i = 0; i < sections.length; i++) {
+          sectionText += "\"" + sections[i].trim() + "\"";
+
+          if (i < sections.length-1) {
+            sectionText +=", "
+          }
+        }
+        sectionText += "]"
+        payload.push("sections: " + sectionText);
+      }
+
+      // Constructing custom task element
+      var text = "define " + featureName + ":\n\t";
+      text += "Clarity." + featureType + "({\n\t\t";
+      for (var i = 0; i < payload.length; i++) {
+        text += payload[i];
+        if (i < payload.length-1) {
+          text+=",\n\t\t";
+        }
+      }
+      text += "\n\t});\n\n";
+
+      var editor = ace.edit("editor");
+      editor.insert(text);
+      clearModalContent('featureModal');
+    }
+
+    function insertFeature() {
+      $("#featureModal").modal('hide');
+
+      var featureName = document.getElementById("featureName").value;
+      var featureType = document.getElementById("featureType").value;
+
+      var text = "// Please fill in the key value pairs according to documentation\n";
+      text += "define " + featureName + ":\n\tClarity." + featureType + "({\n\t\t";
+      var payload = "";
+      if (featureType === "MeasurementFinder" || featureType === "NamedEntityRecognition") {
+        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tsections: [<Enter list of strings>]";
+      } else if (featureType === "ngram") {
+        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tn = <Enter integer value>,\n\t\tfilter_nums = <Enter boolean value>,\n\t\tfilter_stops = <Enter boolean value>,\n\t\tfilter_punct = <Enter boolean value>,\n\t\tlemmas = <Enter boolean value>,\n\t\tlimit_to_termset = <Enter boolean value>,\n\t\tmin_freq = <Enter integer value>";
+      } else if (featureType === "POSTagger") {
+        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>";
+      } else if (featureType === "ProviderAssertion") {
+        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tsections: [<Enter list of strings>],\n\t\tinclude_synonyms = <Enter boolean value>,\n\t\tinclude_descendants = <Enter boolean value>,\n\t\tinclude_ancestors = <Enter boolean value>,\n\t\tvocabulary = <Enter string value>";
+      } else if (featureType === "TermProximityTask") {
+        payload += "documentset: [<Enter document set here>],\n\t\tcohort: <Enter cohort here>,\n\t\ttermset1: [<Enter termset set here>],\n\t\ttermset2: [<Enter termset set here>],\n\t\tword_distance: <Enter integer value>,\n\t\tany_order: [<Enter boolean value>]";
+      } else if (featureType === "TermFinder") {
+        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tsections: [<Enter list of strings>],\n\t\tinclude_synonyms = <Enter boolean value>,\n\t\tinclude_descendants = <Enter boolean value>,\n\t\tinclude_ancestors = <Enter boolean value>,\n\t\tvocabulary = <Enter string value>";
+      } else if (featureType === "ValueExtraction") {
+        payload += "documentset: [<Enter document set here>],\n\t\ttermset: [<Enter termset set here>],\n\t\tcohort: <Enter cohort here>,\n\t\tenum_list = <Enter list of strings>,\n\t\tminimum_value = <Enter integer value>,\n\t\tmaximum_value = <Enter integer value>,\n\t\tcase_sensitive = <Enter boolean value>";
+      }
+
+      text += payload + "\n\t});\n\n";
+      var editor = ace.edit("editor");
+      editor.insert(text);
+      clearModalContent('featureModal');
     }
 
 
@@ -610,7 +710,8 @@
           <input type="text" class="form-control" id="featureName">
           <br><br>
           <label for="featureType">Select Algorithm</label>
-          <select class="form-control" id="featureType">
+          <select class="form-control" id="featureType" onchange="showFeatureOptions()">
+            <option value="None"></option>
             <option value = "MeasurementFinder">Measurement Finder</option>
             <option value = "NamedEntityRecognition">Named Entity Recognition</option>
             <option value = "ngram">Ngram</option>
@@ -620,10 +721,33 @@
             <option value = "TermFinder">Term Finder</option>
             <option value = "ValueExtraction">Value Extraction</option>
           </select>
+          <div id = "customTermsetDiv" class="hidden-field" style="display:None;">
+            <label for="customTermset">Term Set</label>
+            <input type="text" class="form-control" id="customTermset">
+            <p class="help-block">Enter comma separated terms.</p>
+          </div>
+          <div id = "customDocumentsetDiv" class="hidden-field" style="display:None;">
+            <label for="customDocumentset">Document Set</label>
+            <input type="text" class="form-control" id="customDocumentset">
+            <p class="help-block">Enter comma separated terms.</p>
+          </div>
+          <div id = "customCohortDiv" class="hidden-field" style="display:None;">
+            <label for="customCohort">Cohort</label>
+            <input type="text" class="form-control" id="customCohort">
+          </div>
+          <div id = "customSectionsDiv" class="hidden-field" style="display:None;">
+            <label for="customSections">Sections</label>
+            <input type="text" class="form-control" id="customSections">
+            <p class="help-block">Enter comma separated terms.</p>
+          </div>
+          <div id = "customGroupbyDiv" class="hidden-field" style="display:None;">
+            <label for="customGroupby">Group By</label>
+            <input type="text" class="form-control" id="customGroupby">
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" id="submit" class="btn btn-primary" onclick="insertFeature()">Save changes</button>
+          <button type="button" id="submit" class="btn btn-primary" onclick="insertFeature2()">Save changes</button>
         </div>
       </div>
     </div>
