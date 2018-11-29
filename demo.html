@@ -432,11 +432,27 @@
       clearModalContent('customTaskModal');
     }
 
-    function showFeatureOptions() {
+    function resetFeatureModalElements() {
       document.getElementById("customTermsetDiv").style.display = "none";
       document.getElementById("customDocumentsetDiv").style.display = "none";
       document.getElementById("customCohortDiv").style.display = "none";
       document.getElementById("customGroupbyDiv").style.display = "none";
+      document.getElementById("customSectionsDiv").style.display = "none";
+      document.getElementById("customNgramNDiv").style.display = "none";
+      document.getElementById("customFilterNumsDiv").style.display = "none";
+      document.getElementById("customFilterStopsDiv").style.display = "none";
+      document.getElementById("customFilterPunctDiv").style.display = "none";
+      document.getElementById("customMinFreqDiv").style.display = "none";
+      document.getElementById("customLemmasDiv").style.display = "none";
+      document.getElementById("customLimitTermsetDiv").style.display = "none";
+
+
+      // resetting value
+      document.getElementById("featureType").value = "None";
+    }
+
+    function showFeatureOptions() {
+      //resetFeatureModalElements();
 
       var option = document.getElementById("featureType").value;
       if (option === "MeasurementFinder") {
@@ -444,6 +460,22 @@
         document.getElementById("customDocumentsetDiv").style.display = "block";
         document.getElementById("customCohortDiv").style.display = "block";
         document.getElementById("customSectionsDiv").style.display = "block";
+      } else if (option === "NamedEntityRecognition") {
+        document.getElementById("customTermsetDiv").style.display = "block";
+        document.getElementById("customDocumentsetDiv").style.display = "block";
+        document.getElementById("customCohortDiv").style.display = "block";
+        document.getElementById("customSectionsDiv").style.display = "block";
+      } else if (option === "ngram") {
+        document.getElementById("customTermsetDiv").style.display = "block";
+        document.getElementById("customDocumentsetDiv").style.display = "block";
+        document.getElementById("customCohortDiv").style.display = "block";
+        document.getElementById("customNgramNDiv").style.display = "block";
+        document.getElementById("customFilterNumsDiv").style.display = "block";
+        document.getElementById("customFilterStopsDiv").style.display = "block";
+        document.getElementById("customFilterPunctDiv").style.display = "block";
+        document.getElementById("customMinFreqDiv").style.display = "block";
+        document.getElementById("customLemmasDiv").style.display = "block";
+        document.getElementById("customLimitTermsetDiv").style.display = "block";
       }
     }
 
@@ -486,19 +518,19 @@
       }
 
       // cohort
-      var cohort = document.getElementById('customCohort').value;
+      var cohort = document.getElementById('customCohort').value.trim();
       if (cohort != null && cohort.length > 0) {
         payload.push("cohort: " + "\"" +cohort+"\"");
       }
 
       // groupBy
-      var groupBy = document.getElementById('customGroupby').value;
+      var groupBy = document.getElementById('customGroupby').value.trim();
       if (groupBy != null && groupBy.length > 0) {
         payload.push("group_by: " + "\""+groupBy+"\"");
       }
 
       //sections
-      var sections = document.getElementById('customSections').value.split(",");
+      var sections = document.getElementById('customSections').value.trim().split(",");
       if (sections.length > 0 && sections[0].length > 0) {
         var sectionText = "[";
         for (var i = 0; i < sections.length; i++) {
@@ -511,6 +543,44 @@
         sectionText += "]"
         payload.push("sections: " + sectionText);
       }
+
+      if (featureType === "ngram") {
+        //ngram-n
+        var ngramN = document.getElementById('customNgramN').value.trim();
+        if (ngramN != null && ngramN.length > 0) {
+          payload.push("n: " + "\"" +ngramN+"\"");
+        }
+
+        //min-Frequency
+        var minFreq = document.getElementById('customMinFreq').value.trim();
+        if (minFreq != null && minFreq.length > 0) {
+          payload.push("min_freq: " + minFreq);
+        }
+
+        //filter-nums
+        var filterNums = document.getElementById('customFilterNums').value;
+        payload.push("filter_nums: " + filterNums);
+
+        //filter-stops
+        var filterStops = document.getElementById('customFilterStops').value;
+        payload.push("filter_stops: " + filterStops);
+
+        //filter-punct
+        var filterPunct = document.getElementById('customFilterPunct').value;
+        payload.push("filter_punct: " + filterPunct);
+
+        //lemmas
+        var lemmas = document.getElementById('customLemmas').value;
+        payload.push("lemmas: " + lemmas);
+
+        // limit termset
+        var limitTermset = document.getElementById('customLimitTermset').value;
+        payload.push("limit_to_termset: " + limitTermset);
+      }
+
+
+
+
 
       // Constructing custom task element
       var text = "define " + featureName + ":\n\t";
@@ -526,6 +596,7 @@
       var editor = ace.edit("editor");
       editor.insert(text);
       clearModalContent('featureModal');
+      resetFeatureModalElements();
     }
 
     function insertFeature() {
@@ -744,6 +815,50 @@
             <label for="customGroupby">Group By</label>
             <input type="text" class="form-control" id="customGroupby">
           </div>
+          <div id = "customNgramNDiv" class="hidden-field" style="display:None;">
+            <label for="customNgramN">n</label>
+            <input type="text" class="form-control" id="customNgramN">
+          </div>
+          <div id = "customMinFreqDiv" class="hidden-field" style="display:None;">
+            <label for="customMinFreq">Minimum Frequency</label>
+            <input type="text" class="form-control" id="customMinFreq">
+          </div>
+          <div id = "customFilterNumsDiv" class="hidden-field" style="display:None;">
+            <label for="customFilterNums">Filter Numbers</label>
+            <select class="form-control" id="customFilterNums">
+              <option value = "false">False</option>
+              <option value="true">True</option>
+            </select>
+          </div>
+          <div id = "customFilterStopsDiv" class="hidden-field" style="display:None;">
+            <label for="customFilterStops">Filter Stops</label>
+            <select class="form-control" id="customFilterStops">
+              <option value="true">True</option>
+              <option value = "false">False</option>
+            </select>
+          </div>
+          <div id = "customFilterPunctDiv" class="hidden-field" style="display:None;">
+            <label for="customFilterPunct">Filter Punctuations</label>
+            <select class="form-control" id="customFilterPunct">
+              <option value="true">True</option>
+              <option value = "false">False</option>
+            </select>
+          </div>
+          <div id = "customLemmasDiv" class="hidden-field" style="display:None;">
+            <label for="customLemmas">Lemmas</label>
+            <select class="form-control" id="customLemmas">
+              <option value="true">True</option>
+              <option value = "false">False</option>
+            </select>
+          </div>
+          <div id = "customLimitTermsetDiv" class="hidden-field" style="display:None;">
+            <label for="customLimitTermset">Limit to Termset</label>
+            <select class="form-control" id="customLimitTermset">
+              <option value = "false">False</option>
+              <option value="true">True</option>
+            </select>
+          </div>
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
