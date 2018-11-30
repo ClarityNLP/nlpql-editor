@@ -486,7 +486,7 @@
         document.getElementById("customTermsetDiv").style.display = "block";
         document.getElementById("customDocumentsetDiv").style.display = "block";
         document.getElementById("customCohortDiv").style.display = "block";
-      } else if (option === "ProviderAssertion") {
+      } else if (option === "ProviderAssertion" || option === "TermFinder") {
         document.getElementById("customTermsetDiv").style.display = "block";
         document.getElementById("customDocumentsetDiv").style.display = "block";
         document.getElementById("customCohortDiv").style.display = "block";
@@ -623,7 +623,7 @@
         payload.push("limit_to_termset: " + limitTermset);
       }
 
-      if (featureType === "ProviderAssertion") {
+      if (featureType === "ProviderAssertion" || featureType === "TermFinder") {
         //Synonyms
         var synonyms = document.getElementById('customSynonyms').value;
         payload.push("include_synonyms: " + synonyms);
