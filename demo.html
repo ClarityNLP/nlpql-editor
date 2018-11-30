@@ -449,6 +449,9 @@
       document.getElementById("customDescendantsDiv").style.display = "none";
       document.getElementById("customAncestorsDiv").style.display = "none";
       document.getElementById("customVocabularyDiv").style.display = "none";
+      document.getElementById("customTermset2Div").style.display = "none";
+      document.getElementById("customWordDistDiv").style.display = "none";
+      document.getElementById("customAnyOrderDiv").style.display = "none";
 
 
 
@@ -492,6 +495,13 @@
         document.getElementById("customDescendantsDiv").style.display = "block";
         document.getElementById("customAncestorsDiv").style.display = "block";
         document.getElementById("customVocabularyDiv").style.display = "block";
+      } else if (option === "TermProximityTask") {
+        document.getElementById("customTermsetDiv").style.display = "block";
+        document.getElementById("customDocumentsetDiv").style.display = "block";
+        document.getElementById("customCohortDiv").style.display = "block";
+        document.getElementById("customTermset2Div").style.display = "block";
+        document.getElementById("customWordDistDiv").style.display = "block";
+        document.getElementById("customAnyOrderDiv").style.display = "block";
       }
     }
 
@@ -504,7 +514,7 @@
       var payload = [];
 
       //termset
-      var terms = document.getElementById('customTermset').value.split(",");
+      var terms = document.getElementById('customTermset').value.trim().split(",");
       if (terms.length > 0 && terms[0].length > 0) {
         var termText = "[";
         for (var i = 0; i < terms.length; i++) {
@@ -515,11 +525,30 @@
           }
         }
         termText += "]"
-        payload.push("termset: " + termText);
+        if (featureType === "TermProximityTask") {
+          payload.push("termset1: " + termText);
+        } else {
+          payload.push("termset: " + termText);
+        }
+      }
+
+      //termset2
+      var terms2 = document.getElementById('customTermset2').value.trim().split(",");
+      if (terms2.length > 0 && terms2[0].length > 0) {
+        var term2Text = "[";
+        for (var i = 0; i < terms2.length; i++) {
+          term2Text += "\"" + terms2[i].trim() + "\"";
+
+          if (i < terms2.length-1) {
+            term2Text +=", "
+          }
+        }
+        term2Text += "]"
+        payload.push("termset2: " + term2Text);
       }
 
       //documentset
-      var documents = document.getElementById('customDocumentset').value.split(",");
+      var documents = document.getElementById('customDocumentset').value.trim().split(",");
       if (documents.length > 0 && documents[0].length > 0) {
         var documentText = "[";
         for (var i = 0; i < documents.length; i++) {
@@ -612,6 +641,18 @@
         if (vocabulary != null && vocabulary.length > 0) {
           payload.push("vocabulary: " + "\"" + vocabulary + "\"");
         }
+      }
+
+      if (featureType === "TermProximityTask") {
+        // word distance
+        var wordDist = document.getElementById('customWordDist').value.trim();
+        if (wordDist != null && wordDist.length > 0) {
+          payload.push("word_distance: " + wordDist);
+        }
+
+        //anyorder
+        var anyorder = document.getElementById('customAnyOrder').value;
+        payload.push("any_order: " + anyorder);
       }
 
 
@@ -831,6 +872,11 @@
             <input type="text" class="form-control" id="customTermset">
             <p class="help-block">Enter comma separated terms.</p>
           </div>
+          <div id = "customTermset2Div" class="hidden-field" style="display:None;">
+            <label for="customTermset2">Term Set 2</label>
+            <input type="text" class="form-control" id="customTermset2">
+            <p class="help-block">Enter comma separated terms.</p>
+          </div>
           <div id = "customDocumentsetDiv" class="hidden-field" style="display:None;">
             <label for="customDocumentset">Document Set</label>
             <input type="text" class="form-control" id="customDocumentset">
@@ -916,6 +962,17 @@
           <div id = "customVocabularyDiv" class="hidden-field" style="display:None;">
             <label for="customVocabulary">Vocabulary</label>
             <input type="text" class="form-control" id="customVocabulary">
+          </div>
+          <div id = "customWordDistDiv" class="hidden-field" style="display:None;">
+            <label for="customWordDist">Word Distance</label>
+            <input type="text" class="form-control" id="customWordDist">
+          </div>
+          <div id = "customAnyOrderDiv" class="hidden-field" style="display:None;">
+            <label for="customAnyOrder">Any Order</label>
+            <select class="form-control" id="customAnyOrder">
+              <option value = "false">False</option>
+              <option value="true">True</option>
+            </select>
           </div>
         </div>
         <div class="modal-footer">
