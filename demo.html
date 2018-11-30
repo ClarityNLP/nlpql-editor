@@ -3,7 +3,7 @@
   <title> NLPQL Editor </title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js"></script>
@@ -66,6 +66,9 @@
 </head>
 <body>
   <script>
+
+    // URL for the term expander
+    const termExpanderUrl = "http://18.220.133.76:5000/nlpql_expander"
 
     var phenotypePresent = false;
     var librariesPresent = false;
@@ -149,25 +152,72 @@
 
     function insertTermset() {
       $('#termsetModal').modal('hide');
-      var name = document.getElementById('termsetName').value;
-      var terms = document.getElementById('terms').value.split(",");
+      var name = document.getElementById('termsetName').value.trim();
+      var terms = document.getElementById('terms').value.trim().split(",");
 
-      var termText = "[";
-      for (var i = 0; i < terms.length; i++) {
-        termText += "\"" + terms[i].trim() + "\"";
+      var synonyms = document.getElementById('synonymsCheckBox');
+      var plurals = document.getElementById('pluralsCheckBox');
+      var verbInflections = document.getElementById('verbCheckBox');
 
-        if (i < terms.length-1) {
-          termText +=", "
+      if (synonyms.checked || plurals.checked || verbInflections.checked) {
+
+        var payload = "termset " + name + ": [";
+
+        for (var i = 0; i < terms.length; i++) {
+          if (synonyms.checked) {
+            payload += "Clarity.Synonyms(\"" + terms[i].trim() + "\"),";
+          }
+          if (plurals.checked) {
+            payload += "Clarity.Plurals(\"" + terms[i].trim() + "\"),";
+          }
+          if (verbInflections.checked) {
+            payload += "Clarity.VerbInflections(\"" + terms[i].trim() + "\"),";
+          }
         }
+
+        payload = payload.slice(0,payload.length-1); //removing the last extra ',' character
+        payload += "];";
+
+        // making request to the expander API
+        jQuery.ajax({
+          type: "POST",
+          url: termExpanderUrl,
+          contentType: "text/plain",
+          data: payload,
+          success: function(data){
+            data = data.replace(":", ":\n\t");
+            var editor = ace.edit("editor");
+            editor.insert(data);
+            editor.insert("\n\n");
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+             alert("Term Expander Unavailable. Reason: " + errorThrown);
+          }
+        });
+
+      } else {
+        var termText = "[";
+        for (var i = 0; i < terms.length; i++) {
+          termText += "\"" + terms[i].trim() + "\"";
+
+          if (i < terms.length-1) {
+            termText +=", "
+          }
+        }
+        termText += "];"
+
+        text = "termset " + name + ":\n";
+        text = text + "\t" + termText + "\n\n";
+
+        var editor = ace.edit("editor");
+        editor.insert(text);
       }
-      termText += "];"
 
-      text = "termset " + name + ":\n";
-      text = text + "\t" + termText + "\n\n";
-
-      var editor = ace.edit("editor");
-      editor.insert(text);
+      // Resetting the modal
       clearModalContent('termsetModal');
+      synonyms.checked = false;
+      plurals.checked = false;
+      verbInflections.checked = false;
     }
 
     function showDocumentSetOptions() {
@@ -837,6 +887,20 @@
           <label for="terms">Terms</label>
           <input type="text" class="form-control" id="terms">
           <p class="help-block">Enter comma separated terms.</p>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="synonymsCheckBox" value="Synonyms">
+            <label class="form-check-label" for="synonymsCheckBox">Synonyms</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="pluralsCheckBox" value="Plurals">
+            <label class="form-check-label" for="pluralsCheckBox">Plurals</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="verbCheckBox" value="VerbInflections">
+            <label class="form-check-label" for="verbCheckBox">Verb Inflections</label>
+          </div>
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
