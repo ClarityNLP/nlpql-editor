@@ -452,16 +452,20 @@
       document.getElementById("customTermset2Div").style.display = "none";
       document.getElementById("customWordDistDiv").style.display = "none";
       document.getElementById("customAnyOrderDiv").style.display = "none";
-
-
-
+      document.getElementById("customEnumListDiv").style.display = "none";
+      document.getElementById("customMinValDiv").style.display = "none";
+      document.getElementById("customMaxValDiv").style.display = "none";
+      document.getElementById("customCaseSensitiveDiv").style.display = "none";
     }
 
     function showFeatureOptions() {
       resetFeatureModalElements();
 
       var option = document.getElementById("featureType").value;
-      if (option === "MeasurementFinder") {
+
+      if (option === "None") {
+        return;
+      } else if (option === "MeasurementFinder") {
         document.getElementById("customTermsetDiv").style.display = "block";
         document.getElementById("customDocumentsetDiv").style.display = "block";
         document.getElementById("customCohortDiv").style.display = "block";
@@ -502,6 +506,22 @@
         document.getElementById("customTermset2Div").style.display = "block";
         document.getElementById("customWordDistDiv").style.display = "block";
         document.getElementById("customAnyOrderDiv").style.display = "block";
+      } else if (option === "ValueExtraction") {
+        document.getElementById("customTermsetDiv").style.display = "block";
+        document.getElementById("customDocumentsetDiv").style.display = "block";
+        document.getElementById("customCohortDiv").style.display = "block";
+        document.getElementById("customEnumListDiv").style.display = "block";
+        document.getElementById("customMinValDiv").style.display = "block";
+        document.getElementById("customMaxValDiv").style.display = "block";
+        document.getElementById("customCaseSensitiveDiv").style.display = "block";
+      } else {
+        // for custom tasks
+        document.getElementById("customTermsetDiv").style.display = "block";
+        document.getElementById("customDocumentsetDiv").style.display = "block";
+        document.getElementById("customCohortDiv").style.display = "block";
+        if (option === "TextStats") {
+          document.getElementById("customGroupbyDiv").style.display = "block";
+        }
       }
     }
 
@@ -512,6 +532,10 @@
       var featureType = document.getElementById("featureType").value;
 
       var payload = [];
+
+      if (featureType === "None") {
+        return;
+      }
 
       //termset
       var terms = document.getElementById('customTermset').value.trim().split(",");
@@ -655,6 +679,39 @@
         payload.push("any_order: " + anyorder);
       }
 
+      if (featureType === "ValueExtraction") {
+        //enum list
+        var enumList = document.getElementById('customEnumList').value.trim().split(",");
+        if (enumList.length > 0 && enumList[0].length > 0) {
+          var enumListText = "[";
+          for (var i = 0; i < enumList.length; i++) {
+            enumListText += "\"" + enumList[i].trim() + "\"";
+
+            if (i < enumList.length-1) {
+              enumListText +=", "
+            }
+          }
+          enumListText += "]"
+          payload.push("enum_list: " + enumListText);
+        }
+
+        // min val
+        var minVal = document.getElementById('customMinVal').value.trim();
+        if (minVal != null && minVal.length > 0) {
+          payload.push("minimum_value: " + minVal);
+        }
+
+        // max val
+        var maxVal = document.getElementById('customMaxVal').value.trim();
+        if (maxVal != null && maxVal.length > 0) {
+          payload.push("maximum_value: " + maxVal);
+        }
+
+        // case Sensitive
+        var caseSensitive = document.getElementById('customCaseSensitive').value;
+        payload.push("case_sensitive: " + caseSensitive);
+      }
+
 
       // Constructing custom task element
       var text = "define " + featureName + ":\n\t";
@@ -671,7 +728,7 @@
       editor.insert(text);
       clearModalContent('featureModal');
       resetFeatureModalElements();
-      document.getElementById("customLimitTermsetDiv").style.display = "none";
+      document.getElementById("featureType").value = "none";
     }
 
     function insertFeature() {
@@ -866,6 +923,12 @@
             <option value = "TermProximityTask">Term Proximity Task</option>
             <option value = "TermFinder">Term Finder</option>
             <option value = "ValueExtraction">Value Extraction</option>
+            <option value = "GleasonScoreTask">Gleason Score Task</option>
+            <option value = "RaceFinderTask">Race Finder Task</option>
+            <option value = "PFTFinder">PFT Finder</option>
+            <option value = "TextStats">Text Stats</option>
+            <option value = "TNMStager">TNM Stager</option>
+            <option value = "TransfusionNursingNotesParser">Transfusion Nursing Notes Parser</option>
           </select>
           <div id = "customTermsetDiv" class="hidden-field" style="display:None;">
             <label for="customTermset">Term Set</label>
@@ -972,6 +1035,26 @@
             <select class="form-control" id="customAnyOrder">
               <option value = "false">False</option>
               <option value="true">True</option>
+            </select>
+          </div>
+          <div id = "customEnumListDiv" class="hidden-field" style="display:None;">
+            <label for="customEnumList">Enum List</label>
+            <input type="text" class="form-control" id="customEnumList">
+            <p class="help-block">Enter comma separated terms.</p>
+          </div>
+          <div id = "customMinValDiv" class="hidden-field" style="display:None;">
+            <label for="customMinVal">Minimum Value</label>
+            <input type="text" class="form-control" id="customMinVal">
+          </div>
+          <div id = "customMaxValDiv" class="hidden-field" style="display:None;">
+            <label for="customMaxVal">Maximum Value</label>
+            <input type="text" class="form-control" id="customMaxVal">
+          </div>
+          <div id = "customCaseSensitiveDiv" class="hidden-field" style="display:None;">
+            <label for="customCaseSensitive">Case Sensitive</label>
+            <select class="form-control" id="customCaseSensitive">
+              <option value="true">True</option>
+              <option value = "false">False</option>
             </select>
           </div>
         </div>
