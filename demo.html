@@ -41,7 +41,7 @@
 
   <style>
     .help-block {
-      color:red;
+      color:#A9A9A9;
       font-size:small;
     }
 
@@ -86,7 +86,7 @@
       librariesPresent = false;
       $("#clarityCoreButton").prop('disabled', false);
       $("#phenotypeButton").prop('disabled', false);
-      $("#limitDocumentButton").prop('disabled', true);
+      $("#limitDocumentButton").prop('disabled', false);
       $("#termsetButton").prop('disabled', true);
       $("#documentsetButton").prop('disabled', true);
       $("#featureButton").prop('disabled', true);
@@ -834,7 +834,7 @@
         <button type="button" class="btn btn-primary btn-sm custom-button" id="featureButton" data-toggle="modal" data-target="#featureModal" disabled>Define Feature</button>
         <!-- <button type="button" class="btn btn-primary btn-sm custom-button" id="customTaskButton" data-toggle="modal" data-target="#customTaskModal" disabled>Add Custom Task</button> -->
         <button type="button" class="btn btn-primary btn-sm custom-button" id="resultButton" data-toggle="modal" data-target="#resultModal" disabled>Define Result</button>
-        <button type="button" class="btn btn-primary btn-sm custom-button" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal" disabled>Limit Query</button>
+        <button type="button" class="btn btn-primary btn-sm custom-button" id="limitDocumentButton" data-toggle="modal" data-target="#limitDocumentModal">Limit Query</button>
       </div>
       <div class = "col-md-9">
         <div class="form-group">
